@@ -39,7 +39,7 @@ fastify.post('/register', async (req, reply) => {
 
         return { message: 'User created' };
     } catch {
-        return reply.code(400).send({ error: 'User already exists' });
+        return reply.code(400).send({ error: 'Um Usuário com este nome já existe' });
     }
 });
 
@@ -49,13 +49,13 @@ fastify.post('/login', async (req, reply) => {
     const user = await db.getUserByUsername(username);
 
     if (!user) {
-        return reply.code(400).send({ error: 'Invalid credentials' });
+        return reply.code(400).send({ error: 'Credenciais Inválidas' });
     }
 
     const ok = await bcrypt.compare(password, user.password);
 
     if (!ok) {
-        return reply.code(400).send({ error: 'Invalid credentials' });
+        return reply.code(400).send({ error: 'Credenciais Inválidas' });
     }
 
     const token = jwt.sign(
@@ -70,13 +70,13 @@ fastify.post('/calculate', { preHandler: auth }, async (req, reply) => {
     const { expression } = req.body;
 
     try {
-        const result = math.evaluate(expression); // ✅ SAFE replacement for eval
+        const result = math.evaluate(expression);
 
         await db.insertHistory(req.user.id, expression, result);
 
         return { result };
     } catch {
-        return reply.code(400).send({ error: 'Invalid expression' });
+        return reply.code(400).send({ error: 'Expressão Inválida' });
     }
 });
 

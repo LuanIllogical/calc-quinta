@@ -33,7 +33,6 @@ async function getHistoryByUser(userId) {
      ORDER BY created_at DESC`,
         [userId]
     );
-
     return res.rows;
 }
 

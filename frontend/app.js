@@ -31,9 +31,11 @@ function ajax(method, url, data, cb, auth = false) {
     xhr.send(data ? JSON.stringify(data) : null);
 }
 
-/* AUTH */
-
 function register() {
+    if (!user.value || !pass.value) {
+        alert("Preencha todos os campos")
+        return;
+    }
     ajax("POST", "/register",
         { username: user.value, password: pass.value },
         res => alert(res.message || res.error)
@@ -41,6 +43,10 @@ function register() {
 }
 
 function login() {
+    if (!user.value || !pass.value) {
+        alert("Preencha todos os campos")
+        return;
+    }
     ajax("POST", "/login",
         { username: user.value, password: pass.value },
         res => {
@@ -59,8 +65,6 @@ function logout() {
     localStorage.removeItem("token");
     location.reload();
 }
-
-/* APP */
 
 function showApp() {
     auth.style.display = "none";
@@ -87,8 +91,11 @@ function calc() {
 
 function loadHistory() {
     ajax("GET", "/history", null, res => {
-        history.innerHTML = res
-            .map(h => `<div>${h.expression} = ${h.result}</div>`)
+        const hs = res
+            .map(h => `<div style="margin-top: 5px">${h.expression} = ${h.result}</div>`)
             .join("");
+
+        historydiv.innerHTML = hs;
+        console.log(hs);
     }, true);
 }

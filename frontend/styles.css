@@ -1,3 +1,8 @@
+* {
+    box-sizing: border-box;
+
+}
+
 body {
     font-family: Arial;
     display: flex;
@@ -14,10 +19,23 @@ button {
     width: 100%;
     margin: 5px 0;
     padding: 10px;
+    font-weight: bold;
 }
 
 .grid {
     display: grid;
     grid-template-columns: repeat(4, 1fr);
     gap: 5px;
+}
+
+.history-div {
+    color: black;
+    margin-left: 1rem;
+    margin-top: -0.7rem;
+    margin-bottom: 0.7rem;
+}
+
+.calc {
+    background-color: gray;
+    padding: 1rem;
 }
