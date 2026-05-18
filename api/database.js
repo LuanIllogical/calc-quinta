@@ -1,5 +1,6 @@
 const pool = require('./connection');
 
+// Registrar usuário
 async function createUser(username, passwordHash) {
     return pool.query(
         `INSERT INTO users (username, password)
@@ -8,6 +9,7 @@ async function createUser(username, passwordHash) {
     );
 }
 
+// Achar usuário pelo nome
 async function getUserByUsername(username) {
     const res = await pool.query(
         `SELECT * FROM users WHERE username = $1`,
@@ -17,6 +19,7 @@ async function getUserByUsername(username) {
     return res.rows[0];
 }
 
+// Adicionar operação no histórico
 async function insertHistory(userId, expression, result) {
     return pool.query(
         `INSERT INTO history (user_id, expression, result)
@@ -25,6 +28,7 @@ async function insertHistory(userId, expression, result) {
     );
 }
 
+// Achar histórico pelo usuário
 async function getHistoryByUser(userId) {
     const res = await pool.query(
         `SELECT expression, result, created_at

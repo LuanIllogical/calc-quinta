@@ -1,5 +1,8 @@
+// Variáveis secretas de conexão com o banco
 require('dotenv').config();
+const JWT_SECRET = process.env.JWT_SECRET;
 
+// Bibliotecas necessárias
 const fastify = require('fastify')({ logger: true });
 const cors = require('@fastify/cors');
 
@@ -9,10 +12,10 @@ const math = require('mathjs');
 
 const db = require('./database');
 
-const JWT_SECRET = process.env.JWT_SECRET;
-
+// Definição do cors
 fastify.register(cors, { origin: true });
 
+// Autenticação
 async function auth(request, reply) {
     try {
         const authHeader = request.headers.authorization;
@@ -29,6 +32,7 @@ async function auth(request, reply) {
     }
 }
 
+// Rota para registrar usuário
 fastify.post('/register', async (req, reply) => {
     const { username, password } = req.body;
 
@@ -37,12 +41,13 @@ fastify.post('/register', async (req, reply) => {
 
         await db.createUser(username, hash);
 
-        return { message: 'User created' };
+        return { message: 'Usuário registrado' };
     } catch {
         return reply.code(400).send({ error: 'Um Usuário com este nome já existe' });
     }
 });
 
+// Rota para fazer login
 fastify.post('/login', async (req, reply) => {
     const { username, password } = req.body;
 
@@ -66,6 +71,7 @@ fastify.post('/login', async (req, reply) => {
     return { token };
 });
 
+// Rota para calcular expressão
 fastify.post('/calculate', { preHandler: auth }, async (req, reply) => {
     const { expression } = req.body;
 
@@ -80,11 +86,13 @@ fastify.post('/calculate', { preHandler: auth }, async (req, reply) => {
     }
 });
 
+// Rota para puxar histórico do usuário
 fastify.get('/history', { preHandler: auth }, async (req) => {
     return db.getHistoryByUser(req.user.id);
 });
 
+// Console do servidor
 fastify.listen({ port: process.env.PORT }, (err) => {
     if (err) throw err;
-    console.log('Server running');
+    console.log('Servidor rodando');
 });

@@ -1,5 +1,6 @@
 const { Pool } = require('pg');
 
+// Conexão com o banco postgres
 const pool = new Pool({
   host: process.env.DB_HOST,
   port: process.env.DB_PORT,
