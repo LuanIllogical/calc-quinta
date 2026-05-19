@@ -30,7 +30,11 @@ function ajax(method, url, data, cb, auth = false) {
 
     xhr.onreadystatechange = function () {
         if (xhr.readyState === 4) {
-            cb(JSON.parse(xhr.responseText));
+            try {
+                cb(JSON.parse(xhr.responseText));
+            } catch (e) {
+                cb({ error: "API offline ou resposta inválida" });
+            }
         }
     };
 
@@ -91,7 +95,7 @@ function calc() {
         res => {
             if (res.result !== undefined) {
                 display.value = res.result;
-                historydiv.innerHTML += <div style="margin-top: 5px">${expression} = ${res.result}</div>
+                historydiv.innerHTML += `<div style="margin-top: 5px">${expression} = ${res.result}</div>`
             } else {
                 alert(res.error);
             }
