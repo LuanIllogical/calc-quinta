@@ -1,30 +1,48 @@
-// Link da API, se fosse um link mesmo de produção deveria estar em um .env em vez de no aberto assim
+// Link da API
 const API = "http://localhost:3000";
 
-// Token de autenticação
+// Se o token de login estiver guardado, adquire ele
 let token = localStorage.getItem("token");
 
-// Caso token já exista (login previamente feito), pular tela de login
+// Tela de autenticação
+const auth = document.getElementById("auth");
+
+// Tela da calculadora
+const app = document.getElementById("app");
+
+
+// Área de display da calculadora
+const display = document.getElementById("display");
+
+// Área do histórico de operações
+const historydiv = document.getElementById("historydiv");
+
+// Caso o token de login existir, pular a tela de autenticação
 if (token) showApp();
 
-// Adicionar para resultado
+// Adicionar ao display da calculadora
 function add(v) {
-    document.getElementById("display").value += v;
+    display.value += v;
 }
 
-// Limpar resultado
+// Limpar o display da calculadora
 function clearD() {
-    document.getElementById("display").value = "";
+    display.value = "";
 }
 
-// Ajax geral utilizando do link da API e token de autorização
-function ajax(method, url, data, cb, auth = false) {
+// Deletar último caractere do display da calculadora
+function backspace() {
+    display.value = display.value.slice(0, -1);
+}
+
+// Função base do ajax
+function ajax(method, url, data, cb, authReq = false) {
     const xhr = new XMLHttpRequest();
     xhr.open(method, API + url, true);
 
     xhr.setRequestHeader("Content-Type", "application/json");
 
-    if (auth && token) {
+    if (authReq && token) {
         xhr.setRequestHeader("Authorization", "Bearer " + token);
     }
 
@@ -32,7 +50,7 @@ function ajax(method, url, data, cb, auth = false) {
         if (xhr.readyState === 4) {
             try {
                 cb(JSON.parse(xhr.responseText));
-            } catch (e) {
+            } catch {
                 cb({ error: "API offline ou resposta inválida" });
             }
         }
@@ -41,24 +59,20 @@ function ajax(method, url, data, cb, auth = false) {
     xhr.send(data ? JSON.stringify(data) : null);
 }
 
-// Registrar usuário novo
+// Registrar usuário
 function register() {
-    if (!user.value || !pass.value) {
-        alert("Preencha todos os campos")
-        return;
-    }
+    if (!user.value || !pass.value) return alert("Preencha todos os campos");
+
     ajax("POST", "/register",
         { username: user.value, password: pass.value },
         res => alert(res.message || res.error)
     );
 }
 
-// Logar com usuário existente
+// Fazer login
 function login() {
-    if (!user.value || !pass.value) {
-        alert("Preencha todos os campos")
-        return;
-    }
+    if (!user.value || !pass.value) return alert("Preencha todos os campos");
+
     ajax("POST", "/login",
         { username: user.value, password: pass.value },
         res => {
@@ -73,29 +87,31 @@ function login() {
     );
 }
 
-// Sair removendo o token e recarregando a página
+// Sair
 function logout() {
     localStorage.removeItem("token");
     location.reload();
 }
 
-// Escondando a parte de login e mostrando a calculadora, além de carregar o histórico
-function showApp() {
-    auth.style.display = "none";
-    app.style.display = "block";
-    loadHistory();
-}
-
-// Envia a expressão matemática para a API calcular, e se for válida mostra o resultado e adiciona a operação no histórico
+// Formatar expressão e enviar para a API
 function calc() {
-    const expression = display.value;
+    let expression = display.value;
+    let originalExpression = expression;
+
+    // Fecha parênteses
+    expression = autoCloseParentheses(expression);
+
+    // Substitui √ por sqrt
+    expression = expression.replace(/√/g, 'sqrt(');
+    expression = expression.replace(/sqrt\((\d+)(?!\))/g, 'sqrt($1)');
+    expression = expression.replace(/log\((\d+)(?!\))/g, 'log($1)');
 
     ajax("POST", "/calculate",
         { expression },
         res => {
             if (res.result !== undefined) {
                 display.value = res.result;
-                historydiv.innerHTML += `<div style="margin-top: 5px">${expression} = ${res.result}</div>`
+                historydiv.innerHTML = `<div>${originalExpression} = ${res.result}</div>` + historydiv.innerHTML;
             } else {
                 alert(res.error);
             }
@@ -104,14 +120,62 @@ function calc() {
     );
 }
 
-// Pede o histórico de operações do usuário atual
+// Botão de raiz quadrada
+function sqrt() {
+    display.value += "√";
+}
+
+// Botão de log
+function log() {
+    display.value += "log(";
+}
+
+// Função para fechar parênteses automaticamente
+function autoCloseParentheses(expr) {
+    let open = 0;
+
+    for (let char of expr) {
+        if (char === "(") open++;
+        if (char === ")") open--;
+    }
+
+    return expr + ")".repeat(open);
+}
+
+// Esconder tela de autenticação e mostrar tela da calculadora
+function showApp() {
+    auth.style.display = "none";
+    app.style.display = "block";
+    loadHistory();
+}
+
+// Carregar histórico de operações
 function loadHistory() {
     ajax("GET", "/history", null, res => {
-        const hs = res
-            .map(h => `<div style="margin-top: 5px">${h.expression} = ${h.result}</div>`)
+        historydiv.innerHTML = res
+            .map(h => `<div>${h.expression} = ${h.result}</div>`)
             .join("");
-
-        historydiv.innerHTML = hs;
-        console.log(hs);
     }, true);
 }
+
+// EventListeners
+
+// Botões sobre autenticação
+document.getElementById("btnRegister").addEventListener("click", register);
+document.getElementById("btnLogin").addEventListener("click", login);
+
+// Números e operadores simples da calculadora
+document.querySelectorAll("[data-value]").forEach(btn => {
+    btn.addEventListener("click", () => add(btn.dataset.value));
+});
+
+// Botões mais complexos da calculadora
+document.getElementById("clear").addEventListener("click", clearD);
+document.getElementById("calcBtn").addEventListener("click", calc);
+
+document.getElementById("sqrt").addEventListener("click", sqrt);
+document.getElementById("log").addEventListener("click", log);
+document.getElementById("backspace").addEventListener("click", backspace);
+
+document.getElementById("logoutBtn").addEventListener("click", logout);
+

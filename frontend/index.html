@@ -16,45 +16,51 @@
             <input id="user" placeholder="Nome de usuário">
             <input id="pass" type="password" placeholder="Senha">
 
-            <button onclick="register()">Registrar</button>
-            <button onclick="login()">Login</button>
+            <button id="btnRegister">Registrar</button>
+            <button id="btnLogin">Login</button>
         </div>
 
         <div id="app" style="display:none">
 
-
             <div class="calc">
                 <input class="result" id="display" readonly>
+
                 <div class="grid">
-                    <button onclick="add('7')">7</button>
-                    <button onclick="add('8')">8</button>
-                    <button onclick="add('9')">9</button>
-                    <button onclick="add('/')">/</button>
+                    <button data-value="^">^</button>
+                    <button id="sqrt">√</button>
+                    <button data-value="(">(</button>
+                    <button data-value=")">)</button>
 
-                    <button onclick="add('4')">4</button>
-                    <button onclick="add('5')">5</button>
-                    <button onclick="add('6')">6</button>
-                    <button onclick="add('*')">*</button>
+                    <button id="log">log</button>
+                    <button id="clear">C</button>
+                    <button id="backspace">⌫</button>
+                    <button data-value="/">/</button>
 
-                    <button onclick="add('1')">1</button>
-                    <button onclick="add('2')">2</button>
-                    <button onclick="add('3')">3</button>
-                    <button onclick="add('-')">-</button>
+                    <button data-value="7">7</button>
+                    <button data-value="8">8</button>
+                    <button data-value="9">9</button>
+                    <button data-value="*">*</button>
 
-                    <button onclick="add('0')">0</button>
-                    <button onclick="add('.')">.</button>
-                    <button onclick="clearD()">C</button>
-                    <button onclick="add('+')">+</button>
+                    <button data-value="4">4</button>
+                    <button data-value="5">5</button>
+                    <button data-value="6">6</button>
+                    <button data-value="-">-</button>
+
+                    <button data-value="1">1</button>
+                    <button data-value="2">2</button>
+                    <button data-value="3">3</button>
+                    <button data-value="+">+</button>
+
+                    <button data-value=".">.</button>
+                    <button data-value="0">0</button>
+                    <button id="calcBtn" class="equals">=</button>
                 </div>
-
-                <button onclick="calc()">=</button>
             </div>
+
             <h4>History</h4>
             <div id="historydiv" class="history-div"></div>
-
-            <button onclick="logout()">Sair</button>
+            <button id="logoutBtn">Sair</button>
         </div>
-
     </div>
 
     <script src="app.js"></script>

@@ -1,4 +1,5 @@
-const pool = require('./connection');
+// Dados para conexão com o banco
+const pool = require('./Connection');
 
 // Registrar usuário
 async function createUser(username, passwordHash) {
