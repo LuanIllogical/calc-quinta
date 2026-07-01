@@ -8,6 +8,12 @@ const calculatorController =
 const historyController =
     require('../controllers/History');
 
+const profileController =
+    require('../controllers/Profile');
+
+const rankingController =
+    require('../controllers/Ranking');
+
 const auth =
     require('../middleware/auth');
 
@@ -22,6 +28,28 @@ async function routes(fastify) {
     fastify.post(
         '/login',
         authController.login
+    );
+
+    // Profile
+    // Conseguir dados do usuário logado
+    fastify.get(
+        '/profile',
+        { preHandler: auth },
+        profileController.get
+    );
+    // Fazer upgrade para o plano pago
+    fastify.post(
+        '/upgrade',
+        { preHandler: auth },
+        profileController.upgrade
+    );
+
+    // Ranking
+    // Conseguir ranking de operações
+    fastify.get(
+        '/ranking',
+        { preHandler: auth },
+        rankingController.get
     );
 
     // Calculator

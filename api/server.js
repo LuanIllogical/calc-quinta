@@ -7,6 +7,19 @@ const cors =
 // Variáveis de ambiente
 require('dotenv').config();
 
+// Conexão com banco
+const pool = require('./Database/connection');
+// Teste da conexão
+pool.query('SELECT NOW()')
+    .then(res => {
+        console.log('Banco conectado!');
+        console.log(res.rows[0]);
+    })
+    .catch(err => {
+        console.log('Erro no banco:');
+        console.log(err);
+    });
+
 // Definição de rotas
 const routes =
     require('./routes/routes');

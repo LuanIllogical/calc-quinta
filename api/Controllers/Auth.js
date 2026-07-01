@@ -6,11 +6,14 @@ class AuthController {
     // Registrar usuário
     async register(req, reply) {
         try {
-            const { username, password } = req.body;
+            const { username, password, institution, education, address } = req.body;
 
             return await registerUser.execute(
                 username,
-                password
+                password,
+                institution,
+                education,
+                address
             );
         } catch {
             return reply
